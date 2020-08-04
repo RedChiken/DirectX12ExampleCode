@@ -1,0 +1,16 @@
+
+.vs/
+
+Debug/
+
+*.ico
+
+*.aps
+
+*.rc
+
+*.vcxproj
+
+*.filters
+
+*.user
