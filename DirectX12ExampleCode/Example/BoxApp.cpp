@@ -69,20 +69,21 @@ void BoxApp::Draw(const GameTimer& gt)
 	mCommandList->RSSetViewports(1, &mScreenViewport);
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-	D3D12_RESOURCE_BARRIER Barrier;
-	ZeroMemory(&Barrier, sizeof(Barrier));
-	Barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	Barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	Barrier.Transition.pResource = CurrentBackBuffer();
-	Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	Barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	D3D12_RESOURCE_BARRIER BeforeBarrier;
+	ZeroMemory(&BeforeBarrier, sizeof(BeforeBarrier));
+	BeforeBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	BeforeBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	BeforeBarrier.Transition.pResource = CurrentBackBuffer();
+	BeforeBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	BeforeBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	BeforeBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-	mCommandList->ResourceBarrier(1, &Barrier);
+	mCommandList->ResourceBarrier(1, &BeforeBarrier);
 
 	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
+	// Specify the buffers we are going to render to.
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvHeap.Get() };
