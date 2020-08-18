@@ -24,8 +24,8 @@ bool BoxApp::Initialize()
 	BuildPSO();
 
 	ThrowIfFailed(mCommandList->Close());
-	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
 	FlushCommandQueue();
 	return true;
@@ -92,11 +92,26 @@ void BoxApp::Draw(const GameTimer& gt)
 
 	mCommandList->IASetVertexBuffers(0, 1, &mBoxGeo->VertexBufferView());
 	mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
-	mCommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
 	mCommandList->DrawIndexedInstanced(mBoxGeo->DrawArgs["box"].IndexCount, 1, 0, 0, 0);
+
+	D3D12_RESOURCE_BARRIER AfterBarrier;
+	ZeroMemory(&AfterBarrier, sizeof(AfterBarrier));
+	AfterBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	AfterBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	AfterBarrier.Transition.pResource = CurrentBackBuffer();
+	AfterBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	AfterBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+	AfterBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	
+	mCommandList->ResourceBarrier(1, &AfterBarrier);
+	ThrowIfFailed(mCommandList->Close());
+
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrentBackBuffer = (mCurrentBackBuffer + 1) % SwapChainBufferCount;
@@ -320,7 +335,8 @@ void BoxApp::BuildPSO()
 		FALSE, FALSE, 
 		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD, 
 		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD, 
-		D3D12_LOGIC_OP_NOOP, D3D12_COLOR_WRITE_ENABLE_ALL,
+		D3D12_LOGIC_OP_NOOP, 
+		D3D12_COLOR_WRITE_ENABLE_ALL,
 	};
 	for (auto& iter : Blend.RenderTarget)
 	{

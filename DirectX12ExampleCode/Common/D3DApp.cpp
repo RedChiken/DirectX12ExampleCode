@@ -75,6 +75,7 @@ int D3DApp::run()
 		else
 		{
 			mTimer.Tick();
+
 			if (!mAppPaused)
 			{
 				CalculateFrameStats();
@@ -135,8 +136,8 @@ void D3DApp::OnResize()
 	for (int i = 0; i < SwapChainBufferCount; ++i)
 	{
 		mSwapChainbuffer[i].Reset();
-		mDepthStencilBuffer.Reset();
 	}
+	mDepthStencilBuffer.Reset();
 
 	ThrowIfFailed(mSwapChain->ResizeBuffers(
 		SwapChainBufferCount, 
@@ -346,12 +347,12 @@ bool D3DApp::InitMainWindow()
 	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
-
 	mhMainWnd = CreateWindow(L"MainWnd", mMainWndCaption.c_str(), 
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, mhAppInst, 0);
 	if (!mhMainWnd)
 	{
 		MessageBox(0, L"CreateWindow Failed.", 0, 0);
+		return false;
 	}
 
 	ShowWindow(mhMainWnd, SW_SHOW);
@@ -432,8 +433,8 @@ void D3DApp::CreateCommandObjects()
 void D3DApp::CreateSwapChain()
 {
 	mSwapChain.Reset();
-	IDXGIOutput* output = nullptr;
-
+	
+	/*
 	DXGI_SWAP_CHAIN_DESC1 sd1;
 	sd1.Width = mClientWidth;
 	sd1.Height = mClientHeight;
@@ -445,13 +446,13 @@ void D3DApp::CreateSwapChain()
 	sd1.BufferCount = SwapChainBufferCount;
 	sd1.Scaling = DXGI_SCALING_NONE;
 	sd1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	sd1.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
+	sd1.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	sd1.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	
 	DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFSDesc;
 	swapChainFSDesc.Windowed = true;
+	*/
 	
-	/*
 	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = mClientWidth;
 	sd.BufferDesc.Height = mClientHeight;
@@ -499,7 +500,7 @@ ID3D12Resource* D3DApp::CurrentBackBuffer() const
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::CurrentBackBufferView() const
 {
-	D3D12_CPU_DESCRIPTOR_HANDLE result = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE result(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
 	result.ptr += mCurrentBackBuffer * mRtvDescriptorSize;
 	return result;
 }
