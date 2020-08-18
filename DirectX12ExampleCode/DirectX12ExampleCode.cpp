@@ -27,20 +27,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: Place code here.
+    D3DApp* App = new BoxApp(hInstance);
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_DIRECTX12EXAMPLECODE, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+
+   // MyRegisterClass(hInstance);
 
     // Perform application initialization:
 
+    /*
     if (!InitInstance (hInstance, nCmdShow))
+    {
+        return FALSE;
+    }*/
+    if (!App->Initialize())
     {
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECTX12EXAMPLECODE));
+    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECTX12EXAMPLECODE));
 
     //D3DApp::Run
     MSG msg{ };
@@ -48,6 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Main message loop:
     try
     {
+        //App->run();
+        /*
         while (GetMessage(&msg, nullptr, 0, 0))
         {
             if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -57,6 +66,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
         return (int)msg.wParam;
+        */
+        return App->run();
     }
     catch (DXException& e)
     {
