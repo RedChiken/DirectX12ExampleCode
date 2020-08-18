@@ -465,13 +465,14 @@ void D3DApp::CreateSwapChain()
 	sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = SwapChainBufferCount;
+	sd.OutputWindow = mhMainWnd;
 	sd.Windowed = true;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	*/
+	
 
-	//ThrowIfFailed(mdxgiFactory->CreateSwapChain(mCommandQueue.Get(), &sd, mSwapChain.GetAddressOf()));
-	ThrowIfFailed(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), mhMainWnd, &sd1, &swapChainFSDesc, nullptr, &mSwapChain));
+	ThrowIfFailed(mdxgiFactory->CreateSwapChain(mCommandQueue.Get(), &sd, mSwapChain.GetAddressOf()));
+	//ThrowIfFailed(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), mhMainWnd, &sd1, &swapChainFSDesc, nullptr, &mSwapChain));
 	//not recommand to use CreateSwapChain
 }
 
@@ -484,6 +485,7 @@ void D3DApp::FlushCommandQueue()
 	if (mFence->GetCompletedValue() < mCurrentFence)
 	{
 		HANDLE eventHandle = CreateEvent(nullptr, false, false, nullptr);
+		//HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
 		//https://github.com/microsoft/DirectX-Graphics-Samples/issues/15
 
 		ThrowIfFailed(mFence->SetEventOnCompletion(mCurrentFence, eventHandle));
