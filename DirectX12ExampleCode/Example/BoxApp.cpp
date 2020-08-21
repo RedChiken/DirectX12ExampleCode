@@ -66,9 +66,11 @@ void BoxApp::Draw(const GameTimer& gt)
 	ThrowIfFailed(mDirectCmdListAlloc->Reset());
 	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), mPSO.Get()));
 
+	// Set CommandList
 	mCommandList->RSSetViewports(1, &mScreenViewport);
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
 
+	// Set CommandList - not problem
 	D3D12_RESOURCE_BARRIER BeforeBarrier;
 	ZeroMemory(&BeforeBarrier, sizeof(BeforeBarrier));
 	BeforeBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -77,6 +79,7 @@ void BoxApp::Draw(const GameTimer& gt)
 	BeforeBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 	BeforeBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	BeforeBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	
 
 	mCommandList->ResourceBarrier(1, &BeforeBarrier);
 
@@ -84,21 +87,26 @@ void BoxApp::Draw(const GameTimer& gt)
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	// Specify the buffers we are going to render to.
+	// Set CommandList
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	
+
+	// Set CommandList
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
+	// Set CommandList
 	mCommandList->IASetVertexBuffers(0, 1, &mBoxGeo->VertexBufferView());
 	mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
 	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	// Set CommandList
 	mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
 	mCommandList->DrawIndexedInstanced(mBoxGeo->DrawArgs["box"].IndexCount, 1, 0, 0, 0);
 
+	// Set CommandList - not problem
 	D3D12_RESOURCE_BARRIER AfterBarrier;
 	ZeroMemory(&AfterBarrier, sizeof(AfterBarrier));
 	AfterBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -107,7 +115,7 @@ void BoxApp::Draw(const GameTimer& gt)
 	AfterBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	AfterBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	AfterBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	
+
 	mCommandList->ResourceBarrier(1, &AfterBarrier);
 	ThrowIfFailed(mCommandList->Close());
 

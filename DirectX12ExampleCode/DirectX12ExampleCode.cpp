@@ -33,7 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_DIRECTX12EXAMPLECODE, szWindowClass, MAX_LOADSTRING);
 
-   // MyRegisterClass(hInstance);
+    //MyRegisterClass(hInstance);
 
     // Perform application initialization:
 
@@ -41,7 +41,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
-    }*/
+    }
+    */
     if (!App->Initialize())
     {
         return FALSE;
@@ -55,8 +56,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Main message loop:
     try
     {
-        //App->run();
         /*
+        App->run();
         while (GetMessage(&msg, nullptr, 0, 0))
         {
             if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))

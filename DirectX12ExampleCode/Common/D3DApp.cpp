@@ -434,25 +434,6 @@ void D3DApp::CreateSwapChain()
 {
 	mSwapChain.Reset();
 	
-	/*
-	DXGI_SWAP_CHAIN_DESC1 sd1;
-	sd1.Width = mClientWidth;
-	sd1.Height = mClientHeight;
-	sd1.Format = mBackBufferFormat;
-	sd1.Stereo = true;
-	sd1.SampleDesc.Count = m4xMsaaState ? 4 : 1;
-	sd1.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
-	sd1.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd1.BufferCount = SwapChainBufferCount;
-	sd1.Scaling = DXGI_SCALING_NONE;
-	sd1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	sd1.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	sd1.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFSDesc;
-	swapChainFSDesc.Windowed = true;
-	*/
-	
 	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = mClientWidth;
 	sd.BufferDesc.Height = mClientHeight;
