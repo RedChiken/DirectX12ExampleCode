@@ -5,16 +5,7 @@
 #include "DirectX12ExampleCode.h"
 #include "Example/BoxApp.h"
 
-#define MAX_LOADSTRING 100
-
-// Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
 // Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -30,44 +21,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     D3DApp* App = new BoxApp(hInstance);
 
     // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_DIRECTX12EXAMPLECODE, szWindowClass, MAX_LOADSTRING);
-
-    //MyRegisterClass(hInstance);
+    //LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    //LoadStringW(hInstance, IDC_DIRECTX12EXAMPLECODE, szWindowClass, MAX_LOADSTRING);
 
     // Perform application initialization:
-
-    /*
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-    */
     if (!App->Initialize())
     {
         return FALSE;
     }
 
-    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECTX12EXAMPLECODE));
-
-    //D3DApp::Run
-    MSG msg{ };
-
     // Main message loop:
     try
     {
-        /*
-        App->run();
-        while (GetMessage(&msg, nullptr, 0, 0))
-        {
-            if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-        return (int)msg.wParam;
-        */
         return App->run();
     }
     catch (DXException& e)
@@ -75,62 +40,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
         return 0;
     }
-}
-
-
-
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_DIRECTX12EXAMPLECODE));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_DIRECTX12EXAMPLECODE);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-    return RegisterClassExW(&wcex);
-}
-
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-   hInst = hInstance; // Store instance handle in our global variable
-
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-      return FALSE;
-   }
-
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
-
-   return TRUE;
 }
 
 //
@@ -154,7 +63,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+               // DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case ID_EXAMPLE_CHAPTER6:
 

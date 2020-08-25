@@ -2,6 +2,7 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxcompiler.lib")
+//#pragma comment(lib, "DirectXTK12.lib")
 
 #pragma once
 #include <Windows.h>
@@ -24,6 +25,7 @@
 #include <memory>
 #include "GameTimer.h"
 #include "DXException.h"
+#include "../resource.h"
 
 #include <iostream>
 
@@ -31,6 +33,13 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #endif
+
+#define MAX_LOADSTRING 100
+
+// Global Variables:
+//HINSTANCE hInst;                                // current instance
+//WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
+//WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 inline std::wstring AnsiToWString(const std::string& str)
 {

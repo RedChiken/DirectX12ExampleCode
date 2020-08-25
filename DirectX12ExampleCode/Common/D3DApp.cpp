@@ -224,6 +224,34 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	//WndProc
 	switch (msg)
 	{
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			//DialogBox(mhAppInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, About);
+			break;
+		case ID_EXAMPLE_CHAPTER6:
+
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hwnd);
+			break;
+		default:
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+		}
+	}
+		break;
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+		// TODO: Add any drawing code that uses hdc here...
+		EndPaint(hwnd, &ps);
+	}
+	break;
 	case WM_ACTIVATE:
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
@@ -322,44 +350,13 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 bool D3DApp::InitMainWindow()
 {
-	//--------------RegisterClass
-	WNDCLASS wc;
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = MainWndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = mhAppInst;
-	wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(0, IDC_ARROW);
-	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
-	wc.lpszMenuName = 0;
-	wc.lpszClassName = L"MainWnd";
-
-	if (!RegisterClass(&wc))
+	WNDCLASSEXW wc;
+	if (!MyRegisterClass(wc))
 	{
 		MessageBox(0, L"RegisterClass Failed.", 0, 0);
 		return false;
 	}
-
-
-	//--------------------------InitInstance
-	RECT R = { 0, 0, mClientWidth, mClientHeight };
-	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
-	int width = R.right - R.left;
-	int height = R.bottom - R.top;
-	mhMainWnd = CreateWindow(L"MainWnd", mMainWndCaption.c_str(), 
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, mhAppInst, 0);
-	if (!mhMainWnd)
-	{
-		MessageBox(0, L"CreateWindow Failed.", 0, 0);
-		return false;
-	}
-
-	ShowWindow(mhMainWnd, SW_SHOW);
-	UpdateWindow(mhMainWnd);
-
-	return true;
-
+	return InitInstance(SW_SHOW);
 }
 
 bool D3DApp::InitDirect3D()
@@ -508,7 +505,7 @@ void D3DApp::CalculateFrameStats()
 		wstring fpsStr = to_wstring(fps);
 		wstring mspStr = to_wstring(mspf);
 
-		wstring windowText = mMainWndCaption + L"	fps: " + fpsStr + L"	mspf: " + mspStr;
+		wstring windowText = mMainWndCaption + L",    fps: " + fpsStr + L"ms,    pf: " + mspStr;
 
 		SetWindowText(mhMainWnd, windowText.c_str());
 		frameCnt = 0;
@@ -595,4 +592,75 @@ void D3DApp::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 
 		::OutputDebugString(text.c_str());
 	}
+}
+
+//
+//  FUNCTION: MyRegisterClass()
+//
+//  PURPOSE: Registers the window class.
+//
+ATOM D3DApp::MyRegisterClass(WNDCLASSEXW& wc)
+{
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = MainWndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = mhAppInst;
+	wc.hIcon = LoadIcon(mhAppInst, MAKEINTRESOURCE(IDI_DIRECTX12EXAMPLECODE));
+	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.lpszMenuName = MAKEINTRESOURCEW(IDC_DIRECTX12EXAMPLECODE);
+	wc.lpszClassName = L"MainWnd";
+	wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	return RegisterClassExW(&wc);
+}
+
+//
+//   FUNCTION: InitInstance(HINSTANCE, int)
+//
+//   PURPOSE: Saves instance handle and creates main window
+//
+//   COMMENTS:
+//
+//        In this function, we save the instance handle in a global variable and
+//        create and display the main program window.
+//
+BOOL D3DApp::InitInstance(int nCmdShow)
+{
+	RECT R = { 0, 0, mClientWidth, mClientHeight };
+	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
+	int width = R.right - R.left;
+	int height = R.bottom - R.top;
+	mhMainWnd = CreateWindow(L"MainWnd", mMainWndCaption.c_str(),
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, mhAppInst, nullptr);
+	if (!mhMainWnd)
+	{
+		MessageBox(0, L"CreateWindow Failed.", 0, 0);
+		return false;
+	}
+
+	ShowWindow(mhMainWnd, nCmdShow);
+	UpdateWindow(mhMainWnd);
+
+	return true;
+}
+
+INT_PTR CALLBACK D3DApp::About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }

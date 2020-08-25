@@ -51,6 +51,10 @@ protected:
 	void LogAdpaterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
+private:
+	ATOM MyRegisterClass(WNDCLASSEXW& wc);
+	BOOL InitInstance(int nCmdShow);
+	INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 protected:
 	static D3DApp* mApp;
 
